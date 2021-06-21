@@ -1,53 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace Grades
 {
-    public class GradeBook
+    public class GradeBook : GradeTracker
     {
+
+        public override System.Collections.IEnumerator GetEnumerator()
+        {
+            return grades.GetEnumerator();
+        }
+        protected List<float> grades = new List<float>();
+  
+
         public GradeBook()
         {
             _name = "Empty";
+            grades = new List<float>();
         }
-        private string _name;
-
-        public string Name
+        
+        public override GradeStatistics ComputeStatistics()
         {
-            get { return _name; }
-
-            set
-            {
-                if (!String.IsNullOrEmpty(value))
-                {
-                    if (_name != value)
-                    {
-                        NameChangedEventArgs args = new NameChangedEventArgs();
-                        args.ExistingName = _name;
-                        args.NewName = value;
-
-                        NameChanged(this, args);
-                    }
-
-                    _name = value;
-                }
-            }
-        }
-
-        public event NameChangedDelegate NameChanged;
-
-
-
-        public GradeStatistics ComputeStatistics()
-        {
+            Console.WriteLine("GradeBook::ComputeStatistcs");
 
             GradeStatistics stats = new GradeStatistics();
-           
+
             float sum = 0;
 
-            foreach(float grade in grades)
+            foreach (float grade in grades)
             {
                 stats.HighestGrade = Math.Max(grade, stats.HighestGrade);
                 stats.LowestGrade = Math.Min(grade, stats.LowestGrade);
@@ -58,11 +39,23 @@ namespace Grades
 
             return stats;
         }
-        public void AddGrade(float grade)
+ 
+
+        public override void WriteGrades(TextWriter destination)
+        {
+            for (int i = grades.Count; i > 0; i--)
+            {
+                destination.WriteLine(grades[i - 1]);
+            }
+        }
+
+     
+
+
+        public override void AddGrade(float grade)
         {
             grades.Add(grade);
         }
 
-        List<float> grades = new List<float>();
     }
 }
